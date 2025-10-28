@@ -8,7 +8,7 @@ using namespace std;
 class GachaSystem {
 private:
 
-	vector<string> ThreeStarItem = { "Trash" };
+	vector<string> ThreeStarItem = { "Drop: Trash" };
 
 	vector<string> FourStarItem = { "sword", "claymore", "bow", "catalyst", "spear" };
 
@@ -16,8 +16,12 @@ private:
 
 	vector<string> FiveStarCharacter = { "Mona", "Jean", "Diluc", "Clee" };
 
+	vector<int> FiveStarScore;
+	vector <string> FiveStarDrop;
+
 	int countFOUR = 0;
 	int countFIVE = 0;
+	int Rate = 0;
 
 	double calForFive() {
 		if (countFIVE >= 80) {
@@ -36,7 +40,7 @@ private:
 
 	double calcForFour() {
 		if (countFOUR >= 7) {
-			return 0.33;
+			return 0.25;
 		}
 		else if (countFOUR >= 5) {
 			return 0.16;
@@ -54,25 +58,42 @@ public:
 
 	int counter = 0;
 
-	GachaSystem() : gen(rd()), charDist(0.0, 1.0) {}
+	GachaSystem(): gen(rd()), charDist(0.0, 1.0) {}
+
+	void GetStat() {
+		for (size_t i = 0; i < FiveStarScore.size(); i++) {
+			cout << "  " << FiveStarDrop[i] << " - " << FiveStarScore[i] << endl;
+		}
+	}
 
 	void SingleWish() {
 
+		counter++;
+		countFIVE++;
+		countFOUR++;
+		Rate++;
+
 		double chance = charDist(gen);
 
-		if (chance < calForFive() || countFIVE == 89) {
+		if (chance < calForFive() || countFIVE == 90) {
 			uniform_int_distribution<> dis(0, FiveStarCharacter.size() - 1);
-			cout << "5-Star: " << FiveStarCharacter[dis(gen)];
+			string drop = FiveStarCharacter[dis(gen)];
+			cout << "Drop: 5-Star: " << drop;
+			
+			FiveStarDrop.push_back(drop);
+			FiveStarScore.push_back(Rate);
 			countFIVE = 0;
+			Rate = 0;
+
 		}
-		else if (chance < calcForFour() || countFOUR == 9) {
+		else if (chance < calcForFour() || countFOUR == 10) {
 			if (charDist(gen) < 0.5) {
 				uniform_int_distribution<> dis(0, FourStarCharacter.size() - 1);
-				cout << "4-Star char: " << FourStarCharacter[dis(gen)];
+				cout << "Drop: 4-Star char: " << FourStarCharacter[dis(gen)];
 			}
 			else {
 				uniform_int_distribution<> dis(0, FourStarItem.size() - 1);
-				cout << "4-Star weap: " << FourStarItem[dis(gen)];
+				cout << "Drop: 4-Star weap: " << FourStarItem[dis(gen)];
 			}
 
 			countFOUR = 0;
@@ -80,10 +101,6 @@ public:
 		else {
 			cout << ThreeStarItem[0];
 		}
-
-		counter++;
-		countFIVE++;
-		countFOUR++;
 	}
 
 	void multiWish() {
@@ -106,6 +123,8 @@ int main() {
 
 		cout << endl;
 		cout << "Total Pulls: " << Wish.counter << endl;
+		cout << "Five Star Rate: " << endl;
+		Wish.GetStat();
 		cout << "____________________" << endl;
 
 		int type = _getch();
@@ -119,6 +138,5 @@ int main() {
 			Wish.multiWish();
 			cout << endl;
 		}
-
 	}
 }
