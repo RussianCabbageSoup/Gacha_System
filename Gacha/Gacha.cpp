@@ -8,13 +8,22 @@ using namespace std;
 class GachaSystem {
 private:
 
-	vector<string> ThreeStarItem = { "Drop: Trash" };
+	vector<string> ThreeStarItem = { "Trash" };
 
-	vector<string> FourStarItem = { "sword", "claymore", "bow", "catalyst", "spear" };
+	vector<string> FourStarItem = { "Церемониальный меч", "Меч Фавония", "Церемониальный двуручный меч", "Двуручный меч Фавония",
+		"Гроза драконов", "Церемониальный мемуары", "Кодекс Фавония", "Церемониальный лук", "Боевой лук Фавония", "Драконий рык", 
+		"Меч-флейта", "Дождерез", "Меч-колокол", "Копьё Фавония", "Око сознания", "Песнь Странника", "Ржавый лук", "Бесструнный"};
 
-	vector<string> FourStarCharacter = { "Xianlin", "Fischil", "Bennett" };
+	vector<string> FourStarCharacter = { 
+		"Айно", "Ифа", "Лань Янь", "Качина", "Ка Мин", "Шарлотта", "Линнет", "Мика", "Фарузан", "Кандакия", "Коллеи", "Юнь Цзинь",
+		"Сиканоин Хэйдзо", "Горо" , "Тома", "Розария", "Сахароза", "Чун Юнь", "Беннет", "Нин Гуан", "Бэй Доу", "Эмбер", "Кэйа", "Лиза",
+		"Далия", "Иансан", "Оророн", "Сетос", "Шеврёз", "Фремине", "Кавех", "Яо Яо", "Лайла", "Дори", "Куки Синобу", "Кирара",
+		"Кудзё Сара", "Саю", "Янь Фэй", "Синь Янь", "Диона", "Ноэлль", "Фишль", "Син Цю", "Сян Лин", "Рэйзор", "Барбара" };
 
-	vector<string> FiveStarCharacter = { "Mona", "Jean", "Diluc", "Clee" };
+	vector<string> FiveStarCharacter = { "Мидзуки", "Тигнари", "Мона", "Дилюк", "Дэхья", "Кэ Цин", "Ци Ци", "Джинн"};
+
+	vector<string> FiveStarItem = { "Небесный меч", "Волчья погибель", "Нефритовый Коршун", "Молитва Святым Ветрам", "Лук Амоса", 
+		"Меч Сокола", "Небесное величие", "Небесная ось", "Небесный атлас", "Небесное крыло" };
 
 	vector<int> FiveStarScore;
 	vector <string> FiveStarDrop;
@@ -39,11 +48,11 @@ private:
 	}
 
 	double RateForFour() {
-		if (countFOUR >= 7) {
+		if (countFOUR >= 8) {
 			return 0.25;
 		}
-		else if (countFOUR >= 5) {
-			return 0.16;
+		else if (countFOUR >= 6) {
+			return 0.11;
 		}
 		else {
 			return 0.051;
@@ -76,24 +85,36 @@ public:
 		double chance = charDist(gen);
 
 		if (chance < RateForFive() || countFIVE == 90) {
-			uniform_int_distribution<> dis(0, FiveStarCharacter.size() - 1);
-			string drop = FiveStarCharacter[dis(gen)];
-			cout << "Drop: 5-Star: " << drop;
-			
-			FiveStarDrop.push_back(drop);
-			FiveStarScore.push_back(Rate);
-			countFIVE = 0;
-			Rate = 0;
+			if (charDist(gen) < 0.5) {
+				uniform_int_distribution<> dis(0, FiveStarCharacter.size() - 1);
+				string drop = FiveStarCharacter[dis(gen)];
+				cout << "5-Star " << drop;
+
+				FiveStarDrop.push_back(drop);
+				FiveStarScore.push_back(Rate);
+				countFIVE = 0;
+				Rate = 0;
+			}
+			else {
+				uniform_int_distribution<> dis(0, FiveStarItem.size() - 1);
+				string drop = FiveStarItem[dis(gen)];
+				cout << "5-Star " << drop;
+
+				FiveStarDrop.push_back(drop);
+				FiveStarScore.push_back(Rate);
+				countFIVE = 0;
+				Rate = 0;
+			}
 
 		}
 		else if (chance < RateForFour() || countFOUR == 10) {
 			if (charDist(gen) < 0.5) {
 				uniform_int_distribution<> dis(0, FourStarCharacter.size() - 1);
-				cout << "Drop: 4-Star char: " << FourStarCharacter[dis(gen)];
+				cout << "4-Star " << FourStarCharacter[dis(gen)];
 			}
 			else {
 				uniform_int_distribution<> dis(0, FourStarItem.size() - 1);
-				cout << "Drop: 4-Star weap: " << FourStarItem[dis(gen)];
+				cout << "4-Star	" << FourStarItem[dis(gen)];
 			}
 
 			countFOUR = 0;
@@ -114,16 +135,18 @@ public:
 
 int main() {
 
+	setlocale(LC_ALL, "Ru");
 	cout << "SIMULATOR" << endl;
+	cout << endl;
 	GachaSystem Wish;
 
-	cout << "(1) to single wish\n(2) to 10-wish" << endl;
+	cout << "Нажми (1), чтобы Помолится 1 раз\nНажми (2), чтобы Помолится 1 раз" << endl;
 
 	while (true) {
 
 		cout << endl;
-		cout << "Total Pulls: " << Wish.counter << endl;
-		cout << "Five Star Rate: " << endl;
+		cout << "Всего скучено: " << Wish.counter << " (" << Wish.counter * 160 << " Примогемов)" << endl;
+		cout << "5-Star лут: " << endl;
 		Wish.GetStat();
 		cout << "____________________" << endl;
 
