@@ -2,6 +2,9 @@
 #include <random>
 #include <vector>
 #include <conio.h>
+#include <limits>
+#include <iomanip>
+#include <numeric> 
 
 using namespace std;
 
@@ -28,13 +31,17 @@ private:
 	vector<int> FiveStarScore;
 	vector <string> FiveStarDrop;
 
+	vector<string> charDrop;
+
+	vector<short> constList;
+
 	int countFOUR = 0;
 	int countFIVE = 0;
 	int Rate = 0;
 
 	double RateForFive() {
 		if (countFIVE >= 80) {
-			return 0.28;
+			return 0.25;
 		}
 		else if (countFIVE >= 75) {
 			return 0.12;
@@ -59,6 +66,26 @@ private:
 		}
 	}
 
+	void checkDublicate(string drop) {
+
+		bool dublicate = false;
+		size_t index;
+		
+		for (size_t i = 0; i < charDrop.size(); i++) {
+			if (drop == charDrop[i]) {
+				dublicate = true;
+				index = i;
+			}
+		}
+		if (!dublicate) {
+			charDrop.push_back(drop);
+			constList.push_back(0);
+		}
+		else {
+			if (constList[index] < 6) constList[index]++;
+		}
+	}
+	
 public:
 
 	random_device rd;
@@ -69,9 +96,33 @@ public:
 
 	GachaSystem(): gen(rd()), charDist(0.0, 1.0) {}
 
+	void ConstList() {
+		if (!charDrop.empty()) {
+
+			vector<size_t> indices(charDrop.size());
+			iota(indices.begin(), indices.end(), 0);
+
+			sort(indices.begin(), indices.end(), [&](size_t i1, size_t i2) {
+				return constList[i1] > constList[i2];
+				});
+
+			for (size_t i : indices) {
+				cout << setw(21) << charDrop[i] << " (" << constList[i] << ")" << endl;
+			}
+		}
+		else {
+			cout << "У тебя ещё нет ни одного персонажа" << endl;
+		}
+	}
+
 	void GetStat() {
-		for (size_t i = 0; i < FiveStarScore.size(); i++) {
-			cout << "  " << FiveStarDrop[i] << " - " << FiveStarScore[i] << endl;
+		if (!FiveStarDrop.empty()) {
+			for (size_t i = 0; i < FiveStarScore.size(); i++) {
+				cout << setw(21) << FiveStarDrop[i] << " - " << FiveStarScore[i] << endl;
+			}
+		}
+		else {
+			cout << "Ты ещё не получил ни одного 5-star дропа" << endl;
 		}
 	}
 
@@ -90,8 +141,11 @@ public:
 				string drop = FiveStarCharacter[dis(gen)];
 				cout << "5-Star " << drop;
 
+				checkDublicate(drop);
+
 				FiveStarDrop.push_back(drop);
 				FiveStarScore.push_back(Rate);
+
 				countFIVE = 0;
 				Rate = 0;
 			}
@@ -110,7 +164,11 @@ public:
 		else if (chance < RateForFour() || countFOUR == 10) {
 			if (charDist(gen) < 0.5) {
 				uniform_int_distribution<> dis(0, FourStarCharacter.size() - 1);
-				cout << "4-Star " << FourStarCharacter[dis(gen)];
+				string drop = FourStarCharacter[dis(gen)];
+				cout << "4-Star " << drop;
+
+				checkDublicate(drop);
+
 			}
 			else {
 				uniform_int_distribution<> dis(0, FourStarItem.size() - 1);
@@ -124,9 +182,8 @@ public:
 		}
 	}
 
-	void multiWish() {
-
-		for (int i = 0; i < 10; i++) {
+	void multiWish(int n) {
+		for (int i = 0; i < n; i++) {
 			SingleWish();
 			cout << endl;
 		}
@@ -138,28 +195,42 @@ int main() {
 	setlocale(LC_ALL, "Ru");
 	cout << "SIMULATOR" << endl;
 	cout << endl;
-	GachaSystem Wish;
+	GachaSystem Simulate;
 
-	cout << "Нажми (1), чтобы Помолится 1 раз\nНажми (2), чтобы Помолится 1 раз" << endl;
+	cout << "(1), чтобы Помолится 1 раз\n(2), чтобы Помолится 10 раз\n(3), чтобы Помолится 100 раз\n(4), чтобы посмотреть статистику" << endl;
 
 	while (true) {
 
 		cout << endl;
-		cout << "Всего скучено: " << Wish.counter << " (" << Wish.counter * 160 << " Примогемов)" << endl;
-		cout << "5-Star лут: " << endl;
-		Wish.GetStat();
+		cout << "Всего скучено: " << Simulate.counter << " (" << Simulate.counter * 160 << " Примогемов)" << endl;
+		
 		cout << "____________________" << endl;
 
 		int type = _getch();
 		cout << endl;
 
 		if (type == '1') {
-			Wish.SingleWish();
+			Simulate.SingleWish();
 			cout << endl;
 		}
 		else if (type == '2') {
-			Wish.multiWish();
+			Simulate.multiWish(10);
 			cout << endl;
 		}
+		else if (type == '3') {
+			Simulate.multiWish(100);
+			cout << endl;
+		}
+		else if (type == '4') {
+			cout << "Консты: " << endl;
+			Simulate.ConstList();
+
+			cout << endl;
+
+			cout << "Статистика: " << endl;
+			Simulate.GetStat();
+		}
 	}
+
+	return 0;
 }
