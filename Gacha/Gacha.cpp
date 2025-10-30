@@ -237,6 +237,4 @@ int main() {
 			Simulate.GetStat();
 		}
 	}
-
-	return 0;
 }
