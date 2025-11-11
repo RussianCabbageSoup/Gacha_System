@@ -8,8 +8,7 @@
 #include <algorithm>
 
 class GachaSystem {
-private:
-
+protected:
     std::random_device rd;
     std::mt19937 gen;
     std::uniform_real_distribution<> charDist;
@@ -97,7 +96,6 @@ private:
         }
         return isLastConst;
     }
-
 public:
 
     GachaSystem() : gen(rd()), charDist(0.0, 1.0) {}
@@ -145,7 +143,6 @@ public:
         std::vector<int> dist(90, 0);
 
         if (!listVal.fiveStarDrop.empty()) {
-
             for (size_t i = 1; i < listVal.fiveStarDrop.size() + 1; i++) {
                 std::cout << std::setw(30) << listVal.fiveStarDrop[i - 1].first << " - " << listVal.fiveStarDrop[i - 1].second;
                 if (i != 0 && i % 3 == 0) std::cout << std::endl;
@@ -167,6 +164,7 @@ public:
         std::cout << std::setw(15) << "Average: " << avr << std::endl;
         std::cout << std::setw(15) << "Distribution: " << std::endl;
         std::cout << std::endl;
+
         for (size_t i = 1; i < dist.size() + 1; i++) {
             std::cout << std::setw(8) << i << "-th: " << std::setw(5) << dist[i - 1];
             if (i != 0 && i % 6 == 0) std::cout << std::endl;
