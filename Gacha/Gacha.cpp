@@ -8,7 +8,7 @@
 #include <algorithm>
 
 class GachaSystem {
-protected:
+private:
     std::random_device rd;
     std::mt19937 gen;
     std::uniform_real_distribution<> charDist;
@@ -140,7 +140,7 @@ public:
     void getStatistic() {
 
         double avr = 0;
-        std::vector<int> dist(90, 0);
+        std::vector<int> dist(basisParameters::fiveStarLimit, 0);
 
         if (!listVal.fiveStarDrop.empty()) {
             for (size_t i = 1; i < listVal.fiveStarDrop.size() + 1; i++) {
@@ -283,9 +283,9 @@ int main() {
             std::cout << std::endl;
         }
         // debug
-        else {
+        /*else {
             gachaSystem.multiWish(1500000);
-        }
+        }*/
     }
     return 0;
 }
