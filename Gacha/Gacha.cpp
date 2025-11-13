@@ -262,6 +262,7 @@ int main() {
     std::cout << "SIMULATOR" << std::endl;
     std::cout << std::endl;
     GachaSystem gachaSystem;
+    static constexpr int ESC_KEY = 27;
 
     std::cout << "(1) to Wish once\n(2) to Wish 10 times\n(3) to view inventory\n(4) to view statistics" << std::endl;
 
@@ -297,7 +298,7 @@ int main() {
             gachaSystem.getStatistic(false);
             std::cout << std::endl;
         }
-        else if (type == 27) { return 0; } // выход на esc
+        else if (type == ESC_KEY) { return 0; } // выход на esc
         // debug
         else {
             if (type == '0') {
