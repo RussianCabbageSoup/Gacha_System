@@ -4,9 +4,10 @@
 #include <conio.h>
 #include <iomanip>
 #include <algorithm>
+#include <string>
 
-class GachaSystem {
-private:
+class Gacha {
+protected:
     std::random_device rd;
     std::mt19937 gen;
     std::uniform_real_distribution<> charDist;
@@ -71,21 +72,6 @@ private:
         };
     };
 
-    double calcProbability(int currentPull) {
-        return basisParameters::baseChances::factor.first * currentPull - basisParameters::baseChances::factor.second;
-    }
-
-    double rateForFiveStar(int currentPull) {
-        if (currentPull == basisParameters::pullValues::fiveStarLimit) { return 1.0; }
-        if (currentPull >= basisParameters::pullValues::startPityValue) { return calcProbability(currentPull); }
-        else { return basisParameters::baseChances::baseFiveStarChance; }
-    }
-
-    double rateForFourStar(int currentPull) {
-        if (currentPull == basisParameters::pullValues::fourStarLimit) { return 1.0; }
-        else { return basisParameters::baseChances::baseFourStarChance; }
-    }
-
     bool checkDuplicate(std::string drop) {
         bool duplicate = false;
         bool isLastConst = false;
@@ -95,6 +81,7 @@ private:
             if (drop == drop_lists.charDrop[i].first) {
                 duplicate = true;
                 index = i;
+                break;
             }
         }
         if (!duplicate) {
@@ -106,12 +93,13 @@ private:
         }
         return isLastConst;
     }
+
 public:
 
-    GachaSystem() : gen(rd()), charDist(0.0, 1.0) {}
+    Gacha() : gen(rd()), charDist(0.0, 1.0) {}
 
     int getPulls() {
-        return numeric_space.totalPullCounter; 
+        return numeric_space.totalPullCounter;
     }
 
     void getCurrency() {
@@ -147,7 +135,7 @@ public:
         }
     }
 
-    void getStatistic(bool debug) {
+    void getStatistic(bool debug = false) {
 
         double avr = 0;
         std::vector<int> dist(basisParameters::pullValues::fiveStarLimit, 0);
@@ -184,7 +172,25 @@ public:
             }
         }
     }
+};
 
+class GachaAlgorithm : public Gacha {
+private:
+    double calcProbability(int currentPull) {
+        return basisParameters::baseChances::factor.first * currentPull - basisParameters::baseChances::factor.second;
+    }
+
+    double rateForFiveStar(int currentPull) {
+        if (currentPull == basisParameters::pullValues::fiveStarLimit) { return 1.0; }
+        if (currentPull >= basisParameters::pullValues::startPityValue) { return calcProbability(currentPull); }
+        else { return basisParameters::baseChances::baseFiveStarChance; }
+    }
+
+    double rateForFourStar(int currentPull) {
+        if (currentPull == basisParameters::pullValues::fourStarLimit) { return 1.0; }
+        else { return basisParameters::baseChances::baseFourStarChance; }
+    }
+public:
     void singleWish(bool debug = false) {
 
         numeric_space.totalPullCounter++;
@@ -196,11 +202,11 @@ public:
 
         if (chance < rateForFiveStar(numeric_space.countForFiveStar)) {
             // Character or Item
-            if (charDist(gen) < basisParameters::baseChances::baseEqualChance) {  
+            if (charDist(gen) < basisParameters::baseChances::baseEqualChance) {
                 std::uniform_int_distribution<size_t> dis(0, fiveStarCharacter.size() - 1);
                 std::string drop = fiveStarCharacter[dis(gen)];
                 if (!debug) { std::cout << "5-Star " << drop; }
-                
+
 
                 if (checkDuplicate(drop)) numeric_space.starBless += basisParameters::starCurrencyVal::limitBlessForFiveStar;
                 else numeric_space.starBless += basisParameters::starCurrencyVal::baseBlessForFiveStar;
@@ -225,7 +231,7 @@ public:
         }
         else if (chance < rateForFourStar(numeric_space.countForFourStar)) {
             // Character or Item
-            if (charDist(gen) < basisParameters::baseChances::baseEqualChance) {    
+            if (charDist(gen) < basisParameters::baseChances::baseEqualChance) {
                 std::uniform_int_distribution<size_t> dis(0, fourStarCharacter.size() - 1);
                 std::string drop = fourStarCharacter[dis(gen)];
                 if (!debug) { std::cout << "4-Star " << drop; }
@@ -251,17 +257,64 @@ public:
     }
 
     void multiWish(long n, bool debug = false) {
-        for (int i = 0; i < n; i++) {
+        for (long i = 0; i < n; i++) {
             singleWish(debug);
             if (!debug) { std::cout << std::endl; }
         }
     }
 };
 
+class DebugSys : public GachaAlgorithm {
+private:
+    //std::vector<std::string> commandList = { "exit", "clear", "mw"};
+
+    void clearData(bool exit = false) {
+        drop_lists.charDrop.clear();
+        drop_lists.fiveStarDrop.clear();
+        drop_lists.inventory.clear();
+        drop_lists.charDrop.shrink_to_fit();
+        drop_lists.fiveStarDrop.shrink_to_fit();
+        drop_lists.inventory.shrink_to_fit();
+        numeric_space.starBless = 0;
+        numeric_space.stardust = 0;
+        numeric_space.totalPullCounter = 0;
+        numeric_space.rate = 0;
+        numeric_space.countForFiveStar = 0;
+        numeric_space.countForFourStar = 0;
+
+        if (!exit) {
+            std::cout << "local data has been cleared" << std::endl;
+            std::cout << std::endl;
+        }
+    }
+
+    void distTest() {
+        long n;
+        std::cout << "> "; std::cin >> n;
+        multiWish(n, true);
+        getStatistic(true);
+    }
+public:
+    void start() {
+        std::string command;
+        while (true) {
+            std::cout << ">> "; std::getline(std::cin, command);
+            std::cout << std::endl;
+
+            if (command == "exit") { break; }
+            else if (command == "clear") { clearData(); }
+            else if (command == "mw") { distTest(); }
+            else { std::cout << "command not found\n" << std::endl; }
+        }
+        command.clear();
+        clearData(true);
+    }
+};
+
 int main() {
     std::cout << "SIMULATOR" << std::endl;
     std::cout << std::endl;
-    GachaSystem gachaSystem;
+    GachaAlgorithm gachaSystem;
     static constexpr int ESC_KEY = 27;
 
     std::cout << "(1) to Wish once\n(2) to Wish 10 times\n(3) to view inventory\n(4) to view statistics" << std::endl;
@@ -295,22 +348,19 @@ int main() {
             std::cout << std::endl;
 
             std::cout << "Statistics: " << std::endl;
-            gachaSystem.getStatistic(false);
+            gachaSystem.getStatistic();
             std::cout << std::endl;
         }
         else if (type == ESC_KEY) { return 0; } // выход на esc
         // debug
         else {
             if (type == '0') {
-                int dc = _getch();
-                if (dc == '0') {
-                    std::cout << "// debug //\n(0 to exit)" << std::endl;
-                    long n; std::cin >> n;
-                    if (!n == 0) {
-                        gachaSystem.multiWish(n, true);
-                        gachaSystem.getStatistic(true);
-                    }
-                    else { continue; }
+                int doubleCheck = _getch();
+                if (doubleCheck == '0') {
+                    std::cout << "// debug //" << std::endl;
+                    std::cout << std::endl;
+                    DebugSys init;
+                    init.start();
                 }
             }
         }
