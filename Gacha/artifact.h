@@ -1,5 +1,4 @@
-﻿#ifndef ARTIFACT_SYSTEM_H
-#define ARTIFACT_SYSTEM_H
+﻿#pragma once
 
 #include <iostream>
 #include <vector>
@@ -18,7 +17,7 @@ private:
 	struct artifact {
 		std::string type;
 		std::string mainStat;
-		double mainStat_val;
+		double mainStat_val = 0.0;
 		std::vector<std::pair<std::string, double>> addStat;
 	};
 
@@ -79,4 +78,3 @@ public:
 		}
 	}
 };
-#endif // ARTIFACT_SYSTEM_H
