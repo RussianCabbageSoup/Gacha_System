@@ -7,7 +7,7 @@
 #include <algorithm>
 #include <string>
 
-class Gacha {
+class Banner_System {
 protected:
     std::random_device rd;
     std::mt19937 gen;
@@ -98,7 +98,7 @@ protected:
 
 public:
 
-    Gacha() : gen(rd()), charDist(0.0, 1.0) {}
+    Banner_System() : gen(rd()), charDist(0.0, 1.0) {}
 
     int getPulls() {
         return numeric_space.totalPullCounter;
@@ -179,7 +179,7 @@ public:
     }
 };
 
-class GachaAlgorithm : public Gacha {
+class Banner_Algorithm : public Banner_System {
 private:
     double calcProbability(int currentPull, bool isPity) {
         if (isPity) {
@@ -277,7 +277,7 @@ public:
     }
 };
 
-class EventBanner : public GachaAlgorithm {
+class Event_Banner : public Banner_Algorithm {
 private:
     const std::string eventCharacter = "Escoffie";
     bool gotEventCharacter = false;
@@ -285,7 +285,7 @@ public:
     
 };
 
-class DebugSys : public GachaAlgorithm {
+class Debug_System : public Banner_Algorithm {
 private:
     void clearData(bool exit = false) {
         drop_lists.charDrop.clear();
@@ -330,10 +330,10 @@ public:
     }
 };
 
-int startGacha_Banner() {
+int start_banner() {
     std::cout << "BANNER SIMULATOR" << std::endl;
     std::cout << std::endl;
-    GachaAlgorithm gachaSystem;
+    Banner_Algorithm gachaSystem;
     static constexpr int ESC_KEY = 27;
 
     std::cout << "(1) Wish once\n(2) Wish 10 times\n(3) View inventory\n(4) View statistics" << std::endl;
@@ -378,7 +378,7 @@ int startGacha_Banner() {
                 if (doubleCheck == '0') {
                     std::cout << "// debug //" << std::endl;
                     std::cout << std::endl;
-                    DebugSys init;
+                    Debug_System init;
                     init.start();
                 }
             }

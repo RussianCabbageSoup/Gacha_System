@@ -14,8 +14,8 @@ int main() {
         int choose = _getch();
         std::cout << std::endl;
 
-        if (choose == '1') { startGacha_Banner(); }
-        else if (choose == '2') { startGacha_Artifact(); }
+        if (choose == '1') { start_banner(); }
+        else if (choose == '2') { start_artifact(); }
         else if (choose == ESC_KEY) { break; }
     }
 

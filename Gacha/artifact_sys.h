@@ -7,7 +7,7 @@
 #include <algorithm>
 #include <iomanip>
 
-class artifactSystem {
+class Artifact_System {
 private:
 	const std::vector<std::string> artifactType = { "Flower of Life" , "Plume of Death", "Sands of Eon", "Goblet of Eonothem", "Circlet of Logos" };
 	const std::vector<std::pair<std::string, double>> artifactStats = {
@@ -38,7 +38,7 @@ protected:
 	std::mt19937 gen;
 	std::uniform_real_distribution<double> dist;
 public:
-	artifactSystem() : gen(rd()), dist(0.0, 1.0) {}
+	Artifact_System() : gen(rd()), dist(0.0, 1.0) {}
 
 	void getArtifact() {
 		artifact currentArtifact;
@@ -79,7 +79,7 @@ public:
 	}
 };
 
-int startGacha_Artifact() {
+int start_artifact() {
 	std::cout << "ARTIFACT SIMULATOR" << std::endl;
 	std::cout << std::endl;
 	return 0;
