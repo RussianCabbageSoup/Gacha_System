@@ -172,8 +172,8 @@ public:
                 long sum = 0;
                 for (size_t j = 0; j < dist.size(); j++) { sum += dist[j]; }
 
-                std::cout << std::setw(15) << i << "-th: " << std::setw(7) << dist[i - 1] << " (" << std::fixed << std::setprecision(3) << dist[i - 1] * 100.0 / sum << "%)";
-                if (i != 0 && i % 3 == 0) std::cout << std::endl;
+                std::cout << std::setw(12) << i << ": " << std::setw(7) << dist[i - 1];
+                if (i != 0 && i % 5 == 0) std::cout << std::endl;
             }
         }
     }
