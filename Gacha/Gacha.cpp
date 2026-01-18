@@ -10,7 +10,7 @@ int main() {
         std::cout << "My Console" << std::endl;
         std::cout << std::endl;
 
-        std::cout << "(1) to go to banners\n(2) to go to artifacts" << std::endl;
+        std::cout << "(1) Banners\n(2) Artifacts" << std::endl;
         int choose = _getch();
         std::cout << std::endl;
 

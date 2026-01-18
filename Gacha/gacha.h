@@ -53,13 +53,14 @@ protected:
 
     struct basisParameters {
         struct baseChances {
-            static constexpr double baseFiveStarChance = 0.007;
+            static constexpr double baseFiveStarChance = 0.0063;
             static constexpr double baseFourStarChance = 0.051;
             static constexpr double baseEqualChance = 0.5;
-            static constexpr std::pair<double, double> factor = { 0.04, 2.85 };
+            static constexpr std::pair<double, double> factor_pity = { 0.057, 4.15 };
+            static constexpr double factor_default = 0.000015;
         };
         struct pullValues {
-            static constexpr int startPityValue = 73;
+            static constexpr int startPityValue = 74;
             static constexpr int fiveStarLimit = 90;
             static constexpr int fourStarLimit = 10;
             static constexpr int constLimit = 6;
@@ -180,14 +181,19 @@ public:
 
 class GachaAlgorithm : public Gacha {
 private:
-    double calcProbability(int currentPull) {
-        return basisParameters::baseChances::factor.first * currentPull - basisParameters::baseChances::factor.second;
+    double calcProbability(int currentPull, bool isPity) {
+        if (isPity) {
+            return basisParameters::baseChances::factor_pity.first * currentPull - basisParameters::baseChances::factor_pity.second;
+        }
+        else {
+            return  basisParameters::baseChances::baseFiveStarChance + (basisParameters::baseChances::factor_default * currentPull);
+        }
     }
 
     double rateForFiveStar(int currentPull) {
         if (currentPull == basisParameters::pullValues::fiveStarLimit) { return 1.0; }
-        if (currentPull >= basisParameters::pullValues::startPityValue) { return calcProbability(currentPull); }
-        else { return basisParameters::baseChances::baseFiveStarChance; }
+        if (currentPull >= basisParameters::pullValues::startPityValue) { return calcProbability(currentPull, true); }
+        else { return calcProbability(currentPull, false); }
     }
 
     double rateForFourStar(int currentPull) {
@@ -203,7 +209,7 @@ public:
         numeric_space.rate++;
 
         double chance = charDist(gen);
-
+        //std::cout << rateForFiveStar(numeric_space.countForFiveStar) << " ";
         if (chance < rateForFiveStar(numeric_space.countForFiveStar)) {
             // Character or Item
             if (charDist(gen) < basisParameters::baseChances::baseEqualChance) {
@@ -211,9 +217,10 @@ public:
                 std::string drop = fiveStarCharacter[dis(gen)];
                 if (!debug) { std::cout << "5-Star " << drop; }
 
-
-                if (checkDuplicate(drop)) numeric_space.starBless += basisParameters::starCurrencyVal::limitBlessForFiveStar;
-                else numeric_space.starBless += basisParameters::starCurrencyVal::baseBlessForFiveStar;
+                if (!debug) {
+                    if (checkDuplicate(drop)) numeric_space.starBless += basisParameters::starCurrencyVal::limitBlessForFiveStar;
+                    else numeric_space.starBless += basisParameters::starCurrencyVal::baseBlessForFiveStar;
+                }
 
                 drop_lists.fiveStarDrop.push_back({ drop, numeric_space.rate });
 
@@ -240,8 +247,10 @@ public:
                 std::string drop = fourStarCharacter[dis(gen)];
                 if (!debug) { std::cout << "4-Star " << drop; }
 
-                if (checkDuplicate(drop)) numeric_space.starBless += basisParameters::starCurrencyVal::limitBlessForFourStar;
-                else numeric_space.starBless += basisParameters::starCurrencyVal::baseBlessForFourStar;
+                if (!debug) {
+                    if (checkDuplicate(drop)) numeric_space.starBless += basisParameters::starCurrencyVal::limitBlessForFourStar;
+                    else numeric_space.starBless += basisParameters::starCurrencyVal::baseBlessForFourStar;
+                }
             }
             else {
                 std::uniform_int_distribution<size_t> dis(0, fourStarItem.size() - 1);
@@ -327,7 +336,7 @@ int startGacha_Banner() {
     GachaAlgorithm gachaSystem;
     static constexpr int ESC_KEY = 27;
 
-    std::cout << "(1) to Wish once\n(2) to Wish 10 times\n(3) to view inventory\n(4) to view statistics" << std::endl;
+    std::cout << "(1) Wish once\n(2) Wish 10 times\n(3) View inventory\n(4) View statistics" << std::endl;
 
     while (true) {
 
