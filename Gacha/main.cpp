@@ -1,7 +1,7 @@
 ﻿#include <iostream>
 #include <conio.h>
-#include "artifact_sys.h"
-#include "banner_sys.h"
+#include "artifact.h"
+#include "gacha.h"
 
 static constexpr int ESC_KEY = 27;
 
