@@ -370,7 +370,7 @@ int start_banner() {
             gachaSystem.getStatistic();
             std::cout << std::endl;
         }
-        else if (type == ESC_KEY) { return 0; } // выход на esc
+        else if (type == ESC_KEY) { return 0; } 
         // debug
         else {
             if (type == '0') {
