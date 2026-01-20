@@ -197,7 +197,7 @@ private:
     }
 
     double rateForFourStar(int currentPull) {
-        if (currentPull == basisParameters::pullValues::fourStarLimit) { return 1.0; }
+        if (currentPull >= basisParameters::pullValues::fourStarLimit) { return 1.0; }
         else { return basisParameters::baseChances::baseFourStarChance; }
     }
 public:
