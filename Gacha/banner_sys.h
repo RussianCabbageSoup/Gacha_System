@@ -191,7 +191,7 @@ private:
     }
 
     double rateForFiveStar(int currentPull) {
-        if (currentPull == basisParameters::pullValues::fiveStarLimit) { return 1.0; }
+        if (currentPull >= basisParameters::pullValues::fiveStarLimit) { return 1.0; }
         if (currentPull >= basisParameters::pullValues::startPityValue) { return calcProbability(currentPull, true); }
         else { return calcProbability(currentPull, false); }
     }
