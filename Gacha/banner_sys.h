@@ -179,7 +179,7 @@ public:
     }
 };
 
-class Banner_Algorithm : public Banner_System {
+class Default_Banner : public Banner_System {
 private:
     double calcProbability(int currentPull, bool isPity) {
         if (isPity) {
@@ -215,7 +215,7 @@ public:
             if (charDist(gen) < basis_params::probability::baseEqualChance) {
                 std::uniform_int_distribution<size_t> dis(0, five_star_character.size() - 1);
                 std::string drop = five_star_character[dis(gen)];
-                if (!debug) { std::cout << "5-Star " << drop; }
+                if (!debug) { std::cout << "5-STAR " << drop; }
 
                 if (!debug) {
                     if (checkDuplicate(drop)) counter.currency_1 += basis_params::currency::limitBlessForFiveStar;
@@ -230,7 +230,7 @@ public:
             else {
                 std::uniform_int_distribution<size_t> dis(0, five_star_item.size() - 1);
                 std::string drop = five_star_item[dis(gen)];
-                if (!debug) { std::cout << "5-Star " << drop; }
+                if (!debug) { std::cout << "5-STAR " << drop; }
 
                 counter.currency_1 += basis_params::currency::baseBlessForFiveStar;
                 drop_list.five_star_drop.push_back({ drop, counter.rate });
@@ -280,7 +280,7 @@ public:
 class Event_Banner : public Banner_System {
 private:
     const std::string eventCharacter = "Event Character";
-    bool gotEventCharacter = false;
+    bool gotDefaultCharacter = false;
 
     double calcProbability(int currentPull, bool isPity) {
         if (isPity) {
@@ -315,10 +315,25 @@ public:
         //std::cout << rateForFiveStar(numeric_space.countForFiveStar) << " ";
         if (chance < rateForFiveStar(counter.countForFiveStar)) {
             // Character or Item
-            if (charDist(gen) < basis_params::probability::baseEqualChance) {
+            if (charDist(gen) < basis_params::probability::baseEqualChance || gotDefaultCharacter) {
+
+                if (!debug) { std::cout << "5-STAR " << eventCharacter; }
+
+                if (!debug) {
+                    if (checkDuplicate(eventCharacter)) counter.currency_1 += basis_params::currency::limitBlessForFiveStar;
+                    else counter.currency_1 += basis_params::currency::baseBlessForFiveStar;
+                }
+
+                drop_list.five_star_drop.push_back({ eventCharacter, counter.rate });
+
+                counter.countForFiveStar = 0;
+                counter.rate = 0;
+                gotDefaultCharacter = false;
+            }
+            else {
                 std::uniform_int_distribution<size_t> dis(0, five_star_character.size() - 1);
                 std::string drop = five_star_character[dis(gen)];
-                if (!debug) { std::cout << "5-Star " << drop; }
+                if (!debug) { std::cout << "5-STAR " << drop; }
 
                 if (!debug) {
                     if (checkDuplicate(drop)) counter.currency_1 += basis_params::currency::limitBlessForFiveStar;
@@ -329,17 +344,7 @@ public:
 
                 counter.countForFiveStar = 0;
                 counter.rate = 0;
-            }
-            else {
-                std::uniform_int_distribution<size_t> dis(0, five_star_item.size() - 1);
-                std::string drop = five_star_item[dis(gen)];
-                if (!debug) { std::cout << "5-Star " << drop; }
-
-                counter.currency_1 += basis_params::currency::baseBlessForFiveStar;
-                drop_list.five_star_drop.push_back({ drop, counter.rate });
-                drop_list.inventory.push_back(drop);
-                counter.countForFiveStar = 0;
-                counter.rate = 0;
+                gotDefaultCharacter = true;
             }
 
         }
@@ -380,7 +385,7 @@ public:
     }
 };
 
-class Debug_System : public Banner_Algorithm {
+class Debug_System : public Default_Banner {
 private:
     void clearData(bool exit = false) {
         drop_list.character_drop.clear();
@@ -485,7 +490,7 @@ int start_EventBanner() {
 
 int start_DefaultBanner() {
 
-    Banner_Algorithm defaultBanner;
+    Default_Banner defaultBanner;
 
     std::cout << "(1) Wish once\n(2) Wish 10 times\n(3) View inventory\n(4) View statistics" << std::endl;
 
