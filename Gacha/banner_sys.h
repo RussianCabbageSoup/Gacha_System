@@ -277,12 +277,107 @@ public:
     }
 };
 
-class Event_Banner : public Banner_Algorithm {
+class Event_Banner : public Banner_System {
 private:
-    const std::string eventCharacter = "";
+    const std::string eventCharacter = "Event Character";
     bool gotEventCharacter = false;
+
+    double calcProbability(int currentPull, bool isPity) {
+        if (isPity) {
+            return basis_params::probability::factor_pity.first * currentPull - basis_params::probability::factor_pity.second;
+        }
+        else {
+            return  basis_params::probability::baseFiveStarChance + (basis_params::probability::factor_default * currentPull);
+        }
+    }
+
+    double rateForFiveStar(int currentPull) {
+        if (currentPull >= basis_params::limits::fiveStarLimit) { return 1.0; }
+        if (currentPull >= basis_params::limits::startPityValue) { return calcProbability(currentPull, true); }
+        else { return calcProbability(currentPull, false); }
+    }
+
+    double rateForFourStar(int currentPull) {
+        if (currentPull >= basis_params::limits::fourStarLimit) { return 1.0; }
+        else { return basis_params::probability::baseFourStarChance; }
+    }
+
 public:
-    
+
+    void singleWish(bool debug = false) {
+
+        counter.totalPullCounter++;
+        counter.countForFiveStar++;
+        counter.countForFourStar++;
+        counter.rate++;
+
+        double chance = charDist(gen);
+        //std::cout << rateForFiveStar(numeric_space.countForFiveStar) << " ";
+        if (chance < rateForFiveStar(counter.countForFiveStar)) {
+            // Character or Item
+            if (charDist(gen) < basis_params::probability::baseEqualChance) {
+                std::uniform_int_distribution<size_t> dis(0, five_star_character.size() - 1);
+                std::string drop = five_star_character[dis(gen)];
+                if (!debug) { std::cout << "5-Star " << drop; }
+
+                if (!debug) {
+                    if (checkDuplicate(drop)) counter.currency_1 += basis_params::currency::limitBlessForFiveStar;
+                    else counter.currency_1 += basis_params::currency::baseBlessForFiveStar;
+                }
+
+                drop_list.five_star_drop.push_back({ drop, counter.rate });
+
+                counter.countForFiveStar = 0;
+                counter.rate = 0;
+            }
+            else {
+                std::uniform_int_distribution<size_t> dis(0, five_star_item.size() - 1);
+                std::string drop = five_star_item[dis(gen)];
+                if (!debug) { std::cout << "5-Star " << drop; }
+
+                counter.currency_1 += basis_params::currency::baseBlessForFiveStar;
+                drop_list.five_star_drop.push_back({ drop, counter.rate });
+                drop_list.inventory.push_back(drop);
+                counter.countForFiveStar = 0;
+                counter.rate = 0;
+            }
+
+        }
+        else if (chance < rateForFourStar(counter.countForFourStar)) {
+            // Character or Item
+            if (charDist(gen) < basis_params::probability::baseEqualChance) {
+                std::uniform_int_distribution<size_t> dis(0, four_star_character.size() - 1);
+                std::string drop = four_star_character[dis(gen)];
+                if (!debug) { std::cout << "4-Star " << drop; }
+
+                if (!debug) {
+                    if (checkDuplicate(drop)) counter.currency_1 += basis_params::currency::limitBlessForFourStar;
+                    else counter.currency_1 += basis_params::currency::baseBlessForFourStar;
+                }
+            }
+            else {
+                std::uniform_int_distribution<size_t> dis(0, four_star_item.size() - 1);
+                std::string drop = four_star_item[dis(gen)];
+                if (!debug) { std::cout << "4-Star " << drop; }
+
+                counter.currency_1 += basis_params::currency::baseBlessForFourStar;
+                drop_list.inventory.push_back(drop);
+            }
+
+            counter.countForFourStar = 0;
+        }
+        else {
+            if (!debug) { std::cout << three_star_item[0]; }
+            counter.currency_2 += basis_params::currency::starDustValue;
+        }
+    }
+
+    void multiWish(long n, bool debug = false) {
+        for (long i = 0; i < n; i++) {
+            singleWish(debug);
+            if (!debug) { std::cout << std::endl; }
+        }
+    }
 };
 
 class Debug_System : public Banner_Algorithm {
@@ -330,50 +425,51 @@ public:
     }
 };
 
-int start_banner() {
-    std::cout << "BANNER SIMULATOR" << std::endl;
-    std::cout << std::endl;
-    Banner_Algorithm gachaSystem;
-    static constexpr int ESC_KEY = 27;
+static constexpr int ESC_KEY = 27;
+int start_banner();
+
+int start_EventBanner() {
+
+    Event_Banner eventBanner;
 
     std::cout << "(1) Wish once\n(2) Wish 10 times\n(3) View inventory\n(4) View statistics" << std::endl;
 
     while (true) {
 
         std::cout << std::endl;
-        std::cout << "Total pulls: " << gachaSystem.getPulls() << " (" << gachaSystem.getPulls() * 160 << " Primogems)" << std::endl;
-        gachaSystem.getCurrency();
+        std::cout << "Total pulls: " << eventBanner.getPulls() << " (" << eventBanner.getPulls() * 160 << " Primogems)" << std::endl;
+        eventBanner.getCurrency();
 
         std::cout << "____________________" << std::endl;
 
-        int type = _getch();
+        int click = _getch();
         std::cout << std::endl;
 
-        if (type == '1') {
-            gachaSystem.singleWish();
+        if (click == '1') {
+            eventBanner.singleWish();
             std::cout << std::endl;
         }
-        else if (type == '2') {
-            gachaSystem.multiWish(10);
+        else if (click == '2') {
+            eventBanner.multiWish(10);
             std::cout << std::endl;
         }
-        else if (type == '3') {
-            gachaSystem.getInventory();
+        else if (click == '3') {
+            eventBanner.getInventory();
         }
-        else if (type == '4') {
+        else if (click == '4') {
             std::cout << "Constellations: " << std::endl;
-            gachaSystem.constellation();
+            eventBanner.constellation();
 
             std::cout << std::endl;
 
             std::cout << "Statistics: " << std::endl;
-            gachaSystem.getStatistic();
+            eventBanner.getStatistic();
             std::cout << std::endl;
         }
-        else if (type == ESC_KEY) { return 0; } 
+        else if (click == ESC_KEY) { return 0; }
         // debug
         else {
-            if (type == '0') {
+            if (click == '0') {
                 int doubleCheck = _getch();
                 if (doubleCheck == '0') {
                     std::cout << "// debug //" << std::endl;
@@ -383,5 +479,76 @@ int start_banner() {
                 }
             }
         }
+    }
+    return 0;
+}
+
+int start_DefaultBanner() {
+
+    Banner_Algorithm defaultBanner;
+
+    std::cout << "(1) Wish once\n(2) Wish 10 times\n(3) View inventory\n(4) View statistics" << std::endl;
+
+    while (true) {
+
+        std::cout << std::endl;
+        std::cout << "Total pulls: " << defaultBanner.getPulls() << " (" << defaultBanner.getPulls() * 160 << " Primogems)" << std::endl;
+        defaultBanner.getCurrency();
+
+        std::cout << "____________________" << std::endl;
+
+        int click = _getch();
+        std::cout << std::endl;
+
+        if (click == '1') {
+            defaultBanner.singleWish();
+            std::cout << std::endl;
+        }
+        else if (click == '2') {
+            defaultBanner.multiWish(10);
+            std::cout << std::endl;
+        }
+        else if (click == '3') {
+            defaultBanner.getInventory();
+        }
+        else if (click == '4') {
+            std::cout << "Constellations: " << std::endl;
+            defaultBanner.constellation();
+
+            std::cout << std::endl;
+
+            std::cout << "Statistics: " << std::endl;
+            defaultBanner.getStatistic();
+            std::cout << std::endl;
+        }
+        else if (click == ESC_KEY) { return 0; }
+        // debug
+        else {
+            if (click == '0') {
+                int doubleCheck = _getch();
+                if (doubleCheck == '0') {
+                    std::cout << "// debug //" << std::endl;
+                    std::cout << std::endl;
+                    Debug_System init;
+                    init.start();
+                }
+            }
+        }
+    }
+    return 0;
+}
+
+int start_banner() {
+    std::cout << "BANNER SIMULATOR" << std::endl;
+    std::cout << std::endl;
+
+    while (true) {
+        std::cout << "(1) Event Banner\n(2) Default Banner" << std::endl;
+        int click = _getch();
+        std::cout << std::endl;
+
+        if (click == '1') { start_EventBanner(); }
+        else if (click == '2') { start_DefaultBanner(); }
+        else if (click == ESC_KEY) { return 0; }
     }
 }

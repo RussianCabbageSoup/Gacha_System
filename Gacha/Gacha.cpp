@@ -3,8 +3,6 @@
 #include "artifact_sys.h"
 #include "banner_sys.h"
 
-static constexpr int ESC_KEY = 27;
-
 int main() {
     while (true) {
         std::cout << "My Console" << std::endl;
