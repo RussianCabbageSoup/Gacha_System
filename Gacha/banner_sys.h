@@ -1,4 +1,5 @@
 #pragma once
+
 #include <iostream>
 #include <random>
 #include <vector>
@@ -385,35 +386,31 @@ public:
     }
 };
 
-class Debug_System : public Default_Banner {
+class Debug_System {
 private:
-    void clearData(bool exit = false) {
-        drop_list.character_drop.clear();
-        drop_list.five_star_drop.clear();
-        drop_list.inventory.clear();
-        drop_list.character_drop.shrink_to_fit();
-        drop_list.five_star_drop.shrink_to_fit();
-        drop_list.inventory.shrink_to_fit();
-        counter.currency_1 = 0;
-        counter.currency_2 = 0;
-        counter.totalPullCounter = 0;
-        counter.rate = 0;
-        counter.countForFiveStar = 0;
-        counter.countForFourStar = 0;
 
-        if (!exit) {
-            std::cout << "local data has been cleared" << std::endl;
-            std::cout << std::endl;
-        }
-    }
+    Default_Banner object_1;
+    Event_Banner object_2;
+
+    bool isDefault;
 
     void distTest() {
         long n;
         std::cout << "> "; std::cin >> n;
-        multiWish(n, true);
-        getStatistic(true);
+
+        if (isDefault) {
+            object_1.multiWish(n, true);
+            object_1.getStatistic(true);
+        }
+        else {
+            object_2.multiWish(n, true);
+            object_2.getStatistic(true);
+        }
     }
 public:
+
+    Debug_System(bool v) : isDefault(v) {}
+
     void start() {
         std::string command;
         while (true) {
@@ -421,12 +418,10 @@ public:
             std::cout << std::endl;
 
             if (command == "exit") { break; }
-            else if (command == "clear") { clearData(); }
             else if (command == "mw") { distTest(); }
             else { std::cout << "command not found\n" << std::endl; }
         }
         command.clear();
-        clearData(true);
     }
 };
 
@@ -437,6 +432,7 @@ int start_EventBanner() {
 
     Event_Banner eventBanner;
 
+    std::cout << "|| EVENT BANNER ||\n\n";
     std::cout << "(1) Wish once\n(2) Wish 10 times\n(3) View inventory\n(4) View statistics" << std::endl;
 
     while (true) {
@@ -479,7 +475,7 @@ int start_EventBanner() {
                 if (doubleCheck == '0') {
                     std::cout << "// debug //" << std::endl;
                     std::cout << std::endl;
-                    Debug_System init;
+                    Debug_System init(false);
                     init.start();
                 }
             }
@@ -492,6 +488,7 @@ int start_DefaultBanner() {
 
     Default_Banner defaultBanner;
 
+    std::cout << "|| DEFAULT BANNER ||\n\n";
     std::cout << "(1) Wish once\n(2) Wish 10 times\n(3) View inventory\n(4) View statistics" << std::endl;
 
     while (true) {
@@ -534,7 +531,7 @@ int start_DefaultBanner() {
                 if (doubleCheck == '0') {
                     std::cout << "// debug //" << std::endl;
                     std::cout << std::endl;
-                    Debug_System init;
+                    Debug_System init(true);
                     init.start();
                 }
             }
