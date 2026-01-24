@@ -280,7 +280,7 @@ public:
 
 class Event_Banner : public Banner_System {
 private:
-    const std::string eventCharacter = "Event Character";
+    const std::string eventCharacter = "EVENT";
     bool gotDefaultCharacter = false;
 
     double calcProbability(int currentPull, bool isPity) {
