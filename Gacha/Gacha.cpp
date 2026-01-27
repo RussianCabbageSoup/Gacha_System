@@ -5,19 +5,19 @@
 
 int main() {
     while (true) {
-        std::cout << "My Console" << std::endl;
+        std::cout << "\nMy Console" << std::endl;
         std::cout << std::endl;
 
         std::cout << "(1) Banners\n(2) Artifacts" << std::endl;
 
-        bool correctKey = true;
+        bool correctKey = false;
 
-        while (correctKey) {
-            int choose = _getch();
+        while (!correctKey) {
+            int click = _getch();
 
-            switch (choose) {
-            case('1'): start_banner(); correctKey = false; break;
-            case('2'): start_artifact(); correctKey = false; break;
+            switch (click) {
+            case('1'): start_banner(); correctKey = true; break;
+            case('2'): start_artifact(); correctKey = true; break;
             case(ESC_KEY): return 0;
             }
         }

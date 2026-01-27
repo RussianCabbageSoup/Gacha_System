@@ -432,7 +432,7 @@ int start_EventBanner() {
 
     Event_Banner eventBanner;
 
-    std::cout << "|| EVENT BANNER ||\n\n";
+    std::cout << "\n|| EVENT BANNER ||\n\n";
     std::cout << "(1) Wish once\n(2) Wish 10 times\n(3) View inventory\n(4) View statistics" << std::endl;
 
     while (true) {
@@ -441,43 +441,57 @@ int start_EventBanner() {
         std::cout << "Total pulls: " << eventBanner.getPulls() << " (" << eventBanner.getPulls() * 160 << " Primogems)" << std::endl;
         eventBanner.getCurrency();
 
-        std::cout << "____________________" << std::endl;
+        std::cout << "____________________\n" << std::endl;
 
-        int click = _getch();
-        std::cout << std::endl;
+        bool correctKey = false;
 
-        if (click == '1') {
-            eventBanner.singleWish();
-            std::cout << std::endl;
-        }
-        else if (click == '2') {
-            eventBanner.multiWish(10);
-            std::cout << std::endl;
-        }
-        else if (click == '3') {
-            eventBanner.getInventory();
-        }
-        else if (click == '4') {
-            std::cout << "Constellations: " << std::endl;
-            eventBanner.constellation();
+        while (!correctKey) {
+            int click = _getch();
 
-            std::cout << std::endl;
+            switch (click) {
+            case('1'):
+                eventBanner.singleWish();
+                std::cout << std::endl;
+                correctKey = true;
+                break;
 
-            std::cout << "Statistics: " << std::endl;
-            eventBanner.getStatistic();
-            std::cout << std::endl;
-        }
-        else if (click == ESC_KEY) { return 0; }
-        // debug
-        else {
-            if (click == '0') {
-                int doubleCheck = _getch();
-                if (doubleCheck == '0') {
-                    std::cout << "// debug //" << std::endl;
-                    std::cout << std::endl;
-                    Debug_System init(false);
-                    init.start();
+            case('2'):
+                eventBanner.multiWish(10);
+                std::cout << std::endl;
+                correctKey = true;
+                break;
+            
+            case('3'):
+                eventBanner.getInventory();
+                correctKey = true;
+                break;
+            
+            case('4'):
+                std::cout << "Constellations: " << std::endl;
+                eventBanner.constellation();
+
+                std::cout << std::endl;
+
+                std::cout << "Statistics: " << std::endl;
+                eventBanner.getStatistic();
+                std::cout << std::endl;
+                correctKey = true;
+                break;
+            
+            case(ESC_KEY): return 0;
+            // debug
+            case('0'):
+                if (click == '0') {
+                    int doubleCheck = _getch();
+                    if (doubleCheck == '0') {
+                        std::cout << "// debug //" << std::endl;
+                        std::cout << std::endl;
+                        Debug_System init(false);
+                        init.start();
+                    }
                 }
+                correctKey = true;
+                break;
             }
         }
     }
@@ -488,7 +502,7 @@ int start_DefaultBanner() {
 
     Default_Banner defaultBanner;
 
-    std::cout << "|| DEFAULT BANNER ||\n\n";
+    std::cout << "\n|| DEFAULT BANNER ||\n\n";
     std::cout << "(1) Wish once\n(2) Wish 10 times\n(3) View inventory\n(4) View statistics" << std::endl;
 
     while (true) {
@@ -497,43 +511,55 @@ int start_DefaultBanner() {
         std::cout << "Total pulls: " << defaultBanner.getPulls() << " (" << defaultBanner.getPulls() * 160 << " Primogems)" << std::endl;
         defaultBanner.getCurrency();
 
-        std::cout << "____________________" << std::endl;
+        std::cout << "____________________\n" << std::endl;
 
-        int click = _getch();
-        std::cout << std::endl;
+        bool correctKey = false;
 
-        if (click == '1') {
-            defaultBanner.singleWish();
-            std::cout << std::endl;
-        }
-        else if (click == '2') {
-            defaultBanner.multiWish(10);
-            std::cout << std::endl;
-        }
-        else if (click == '3') {
-            defaultBanner.getInventory();
-        }
-        else if (click == '4') {
-            std::cout << "Constellations: " << std::endl;
-            defaultBanner.constellation();
+        while (!correctKey) {
+            int click = _getch();
 
-            std::cout << std::endl;
+            switch (click) {
+            case('1'):
+                defaultBanner.singleWish();
+                std::cout << std::endl;
+                correctKey = true;
+                break;
 
-            std::cout << "Statistics: " << std::endl;
-            defaultBanner.getStatistic();
-            std::cout << std::endl;
-        }
-        else if (click == ESC_KEY) { return 0; }
-        // debug
-        else {
-            if (click == '0') {
+            case('2'):
+                defaultBanner.multiWish(10);
+                std::cout << std::endl;
+                correctKey = true;
+                break;
+
+            case('3'):
+                defaultBanner.getInventory();
+                correctKey = true;
+                break;
+
+            case('4'):
+                std::cout << "Constellations: " << std::endl;
+                defaultBanner.constellation();
+                std::cout << std::endl;
+
+                std::cout << "Statistics: " << std::endl;
+                defaultBanner.getStatistic();
+                std::cout << std::endl;
+                correctKey = true;
+                break;
+
+            case(ESC_KEY): return 0;
+                // debug
+            case('0'):
                 int doubleCheck = _getch();
+
                 if (doubleCheck == '0') {
                     std::cout << "// debug //" << std::endl;
                     std::cout << std::endl;
                     Debug_System init(true);
                     init.start();
                 }
+                correctKey = true;
+                break;
             }
         }
     }
@@ -542,15 +568,20 @@ int start_DefaultBanner() {
 
 int start_banner() {
     std::cout << "\nBANNER SIMULATOR" << std::endl;
-    std::cout << std::endl;
 
     while (true) {
-        std::cout << "(1) Event Banner\n(2) Default Banner" << std::endl;
-        int click = _getch();
-        std::cout << std::endl;
+        std::cout << "\n(1) Event Banner\n(2) Default Banner" << std::endl;
 
-        if (click == '1') { start_EventBanner(); }
-        else if (click == '2') { start_DefaultBanner(); }
-        else if (click == ESC_KEY) { return 0; }
+        bool correctKey = false;
+
+        while (!correctKey) {
+            int click = _getch();
+
+            switch (click) {
+            case('1'): start_EventBanner(); correctKey = true; break;
+            case('2'): start_DefaultBanner(); correctKey = true; break;
+            case(ESC_KEY): return 0;
+            }
+        }
     }
 }
