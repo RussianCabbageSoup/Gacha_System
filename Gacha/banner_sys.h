@@ -280,8 +280,11 @@ public:
 
 class Event_Banner : public Banner_System {
 private:
-    const std::string eventCharacter = "EVENT";
-    bool gotDefaultCharacter = false;
+    const std::string eventFiveStar = "EVENT";
+    const std::vector<std::string> eventFourStar = { "event1", "event2", "event3" };
+
+    bool gotDefaultFiveStar = false;
+    bool gotDefaultFourStar = false;
 
     double calcProbability(int currentPull, bool isPity) {
         if (isPity) {
@@ -316,20 +319,20 @@ public:
         //std::cout << rateForFiveStar(numeric_space.countForFiveStar) << " ";
         if (chance < rateForFiveStar(counter.countForFiveStar)) {
             // Character or Item
-            if (charDist(gen) < basis_params::probability::baseEqualChance || gotDefaultCharacter) {
+            if (charDist(gen) < basis_params::probability::baseEqualChance || gotDefaultFiveStar) {
 
-                if (!debug) { std::cout << "5-STAR " << eventCharacter; }
+                if (!debug) { std::cout << "5-STAR " << eventFiveStar; }
 
                 if (!debug) {
-                    if (checkDuplicate(eventCharacter)) counter.currency_1 += basis_params::currency::limitBlessForFiveStar;
+                    if (checkDuplicate(eventFiveStar)) counter.currency_1 += basis_params::currency::limitBlessForFiveStar;
                     else counter.currency_1 += basis_params::currency::baseBlessForFiveStar;
                 }
 
-                drop_list.five_star_drop.push_back({ eventCharacter, counter.rate });
+                drop_list.five_star_drop.push_back({ eventFiveStar, counter.rate });
 
                 counter.countForFiveStar = 0;
                 counter.rate = 0;
-                gotDefaultCharacter = false;
+                gotDefaultFiveStar = false;
             }
             else {
                 std::uniform_int_distribution<size_t> dis(0, five_star_character.size() - 1);
@@ -345,31 +348,46 @@ public:
 
                 counter.countForFiveStar = 0;
                 counter.rate = 0;
-                gotDefaultCharacter = true;
+                gotDefaultFiveStar = true;
             }
 
         }
         else if (chance < rateForFourStar(counter.countForFourStar)) {
-            // Character or Item
-            if (charDist(gen) < basis_params::probability::baseEqualChance) {
-                std::uniform_int_distribution<size_t> dis(0, four_star_character.size() - 1);
-                std::string drop = four_star_character[dis(gen)];
+            if (charDist(gen) < basis_params::probability::baseEqualChance || gotDefaultFourStar) {
+                std::uniform_int_distribution<size_t> dis(0, eventFourStar.size() - 1);
+                std::string drop = eventFourStar[dis(gen)];
+
                 if (!debug) { std::cout << "4-Star " << drop; }
 
                 if (!debug) {
                     if (checkDuplicate(drop)) counter.currency_1 += basis_params::currency::limitBlessForFourStar;
                     else counter.currency_1 += basis_params::currency::baseBlessForFourStar;
                 }
+
+                gotDefaultFourStar = false;
             }
             else {
-                std::uniform_int_distribution<size_t> dis(0, four_star_item.size() - 1);
-                std::string drop = four_star_item[dis(gen)];
-                if (!debug) { std::cout << "4-Star " << drop; }
+                if (charDist(gen) < basis_params::probability::baseEqualChance) {
+                    std::uniform_int_distribution<size_t> dis(0, four_star_character.size() - 1);
+                    std::string drop = four_star_character[dis(gen)];
+                    if (!debug) { std::cout << "4-Star " << drop; }
 
-                counter.currency_1 += basis_params::currency::baseBlessForFourStar;
-                drop_list.inventory.push_back(drop);
+                    if (!debug) {
+                        if (checkDuplicate(drop)) counter.currency_1 += basis_params::currency::limitBlessForFourStar;
+                        else counter.currency_1 += basis_params::currency::baseBlessForFourStar;
+                    }
+                }
+                else {
+                    std::uniform_int_distribution<size_t> dis(0, four_star_item.size() - 1);
+                    std::string drop = four_star_item[dis(gen)];
+                    if (!debug) { std::cout << "4-Star " << drop; }
+
+                    counter.currency_1 += basis_params::currency::baseBlessForFourStar;
+                    drop_list.inventory.push_back(drop);
+                }
+
+                gotDefaultFourStar = true;
             }
-
             counter.countForFourStar = 0;
         }
         else {
