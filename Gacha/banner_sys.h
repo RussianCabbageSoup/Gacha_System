@@ -541,7 +541,7 @@ int start_DefaultBanner() {
 }
 
 int start_banner() {
-    std::cout << "BANNER SIMULATOR" << std::endl;
+    std::cout << "\nBANNER SIMULATOR" << std::endl;
     std::cout << std::endl;
 
     while (true) {

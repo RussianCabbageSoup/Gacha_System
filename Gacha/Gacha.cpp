@@ -9,13 +9,18 @@ int main() {
         std::cout << std::endl;
 
         std::cout << "(1) Banners\n(2) Artifacts" << std::endl;
-        int choose = _getch();
-        std::cout << std::endl;
 
-        if (choose == '1') { start_banner(); }
-        else if (choose == '2') { start_artifact(); }
-        else if (choose == ESC_KEY) { break; }
+        bool correctKey = true;
+
+        while (correctKey) {
+            int choose = _getch();
+
+            switch (choose) {
+            case('1'): start_banner(); correctKey = false; break;
+            case('2'): start_artifact(); correctKey = false; break;
+            case(ESC_KEY): return 0;
+            }
+        }
     }
-
     return 0;
 }

@@ -80,7 +80,7 @@ public:
 };
 
 int start_artifact() {
-	std::cout << "ARTIFACT SIMULATOR" << std::endl;
+	std::cout << "\nARTIFACT SIMULATOR" << std::endl;
 	std::cout << std::endl;
 	return 0;
 }
