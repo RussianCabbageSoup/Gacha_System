@@ -146,7 +146,7 @@ public:
         if (!drop_list.five_star_drop.empty()) {
             for (size_t i = 1; i < drop_list.five_star_drop.size() + 1; i++) {
                 if (!debug) {
-                    std::cout << std::setw(30) << drop_list.five_star_drop[i - 1].first << " - " << drop_list.five_star_drop[i - 1].second;
+                    std::cout << std::setw(30) << drop_list.five_star_drop[i - 1].first << " - " << std::setw(2) << drop_list.five_star_drop[i - 1].second;
                     if (i != 0 && i % 3 == 0) std::cout << std::endl;
                 }
                 avr += drop_list.five_star_drop[i - 1].second;
@@ -278,7 +278,7 @@ public:
     }
 };
 
-class Event_Banner : public Banner_System {
+class Event_CharacterBanner : public Banner_System {
 private:
     const std::string eventFiveStar = "EVENT";
     const std::vector<std::string> eventFourStar = { "event1", "event2", "event3" };
@@ -404,11 +404,15 @@ public:
     }
 };
 
+class Event_WeaponBanner {
+
+};
+
 class Debug_System {
 private:
 
     Default_Banner object_1;
-    Event_Banner object_2;
+    Event_CharacterBanner object_2;
 
     bool isDefault;
 
@@ -448,7 +452,7 @@ int start_banner();
 
 int start_EventBanner() {
 
-    Event_Banner eventBanner;
+    Event_CharacterBanner eventBanner;
 
     std::cout << "\n|| EVENT BANNER ||\n\n";
     std::cout << "(1) Wish once\n(2) Wish 10 times\n(3) View inventory\n(4) View statistics" << std::endl;
