@@ -101,6 +101,14 @@ public:
 
     Banner_System() : gen(rd()), charDist(0.0, 1.0) {}
 
+    virtual double calcProbability(int, bool) = 0;
+    virtual double rateForFiveStar(int) = 0;
+
+    virtual double rateForFourStar(int currentPull) final {
+        if (currentPull >= basis_params::limits::fourStarLimit) { return 1.0; }
+        else { return basis_params::probability::baseFourStarChance; }
+    }
+
     int getPulls() {
         return counter.totalPullCounter;
     }
@@ -182,7 +190,7 @@ public:
 
 class Default_Banner : public Banner_System {
 private:
-    double calcProbability(int currentPull, bool isPity) {
+    double calcProbability(int currentPull, bool isPity) override {
         if (isPity) {
             return basis_params::probability::factor_pity.first * currentPull - basis_params::probability::factor_pity.second;
         }
@@ -191,16 +199,12 @@ private:
         }
     }
 
-    double rateForFiveStar(int currentPull) {
+    double rateForFiveStar(int currentPull) override {
         if (currentPull >= basis_params::limits::fiveStarLimit) { return 1.0; }
         if (currentPull >= basis_params::limits::startPityValue) { return calcProbability(currentPull, true); }
         else { return calcProbability(currentPull, false); }
     }
 
-    double rateForFourStar(int currentPull) {
-        if (currentPull >= basis_params::limits::fourStarLimit) { return 1.0; }
-        else { return basis_params::probability::baseFourStarChance; }
-    }
 public:
     void singleWish(bool debug = false) {
 
@@ -286,7 +290,7 @@ private:
     bool gotDefaultFiveStar = false;
     bool gotDefaultFourStar = false;
 
-    double calcProbability(int currentPull, bool isPity) {
+    double calcProbability(int currentPull, bool isPity) override {
         if (isPity) {
             return basis_params::probability::factor_pity.first * currentPull - basis_params::probability::factor_pity.second;
         }
@@ -295,17 +299,11 @@ private:
         }
     }
 
-    double rateForFiveStar(int currentPull) {
+    double rateForFiveStar(int currentPull) override {
         if (currentPull >= basis_params::limits::fiveStarLimit) { return 1.0; }
         if (currentPull >= basis_params::limits::startPityValue) { return calcProbability(currentPull, true); }
         else { return calcProbability(currentPull, false); }
     }
-
-    double rateForFourStar(int currentPull) {
-        if (currentPull >= basis_params::limits::fourStarLimit) { return 1.0; }
-        else { return basis_params::probability::baseFourStarChance; }
-    }
-
 public:
 
     void singleWish(bool debug = false) {
