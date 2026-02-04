@@ -57,14 +57,20 @@ protected:
             static constexpr double baseFiveStarChance = 0.0063;
             static constexpr double baseFourStarChance = 0.051;
             static constexpr double baseEqualChance = 0.5;
+            static constexpr double baseEventCharChance = 0.585;
             static constexpr std::pair<double, double> factor_pity = { 0.057, 4.15 };
             static constexpr double factor_default = 0.000015;
+
+            static constexpr double baseChance_eventItem = 0.008;
         };
         struct limits {
             static constexpr int startPityValue = 74;
             static constexpr int fiveStarLimit = 90;
             static constexpr int fourStarLimit = 10;
             static constexpr int constLimit = 6;
+
+            static constexpr int startPityItem = 65;
+            static constexpr int fiveStarItemLimit = 80;
         };
         struct currency{
             static constexpr int baseBlessForFiveStar = 10;
@@ -318,8 +324,7 @@ public:
         double chance = charDist(gen);
         //std::cout << rateForFiveStar(numeric_space.countForFiveStar) << " ";
         if (chance < rateForFiveStar(counter.countForFiveStar)) {
-            // Character or Item
-            if (charDist(gen) < basis_params::probability::baseEqualChance || gotDefaultFiveStar) {
+            if (charDist(gen) < basis_params::probability::baseEventCharChance || gotDefaultFiveStar) {
 
                 if (!debug) { std::cout << "5-STAR " << eventFiveStar; }
 
