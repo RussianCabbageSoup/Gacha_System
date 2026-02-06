@@ -148,13 +148,10 @@ public:
         }
     }
 
-    void getStatistic(bool debug = false) {
+    void getStatistic(bool debug = false, bool isLite = false) {
 
         double avrFiveStar = 0;
-        double avrFourStar = 0;
-
         std::vector<int> distFiveStar(basis_params::limits::fiveStarLimit, 0);
-        std::vector<int> distFourStar(basis_params::limits::fourStarLimit, 0);
 
         if (!drop_list.five_star_drop.empty()) {
             for (size_t i = 1; i < drop_list.five_star_drop.size() + 1; i++) {
@@ -175,21 +172,27 @@ public:
             std::cout << "You haven't obtained any 5-star drops yet" << std::endl;
         }
 
-        if (!drop_list.four_star_drop.empty()) {
-            for (size_t i = 1; i < drop_list.four_star_drop.size() + 1; i++) {
-                avrFourStar += drop_list.four_star_drop[i - 1].second;
-            }
-            avrFourStar /= (double)drop_list.four_star_drop.size();
-            for (size_t i = 0; i < drop_list.four_star_drop.size(); i++) {
-                if (!(drop_list.four_star_drop[i].second > basis_params::limits::fourStarLimit)) {
-                    distFourStar[drop_list.four_star_drop[i].second - 1]++;
-                }
-            }
-        }
-
         std::cout << std::endl;
         std::cout << std::setw(15) << "Average for five star: " << avrFiveStar << std::endl;
-        std::cout << std::setw(15) << "Average for four star: " << avrFourStar << std::endl;
+
+        std::vector<int> distFourStar(basis_params::limits::fourStarLimit, 0);
+
+        if (!isLite) {
+            double avrFourStar = 0;
+            
+            if (!drop_list.four_star_drop.empty()) {
+                for (size_t i = 1; i < drop_list.four_star_drop.size() + 1; i++) {
+                    avrFourStar += drop_list.four_star_drop[i - 1].second;
+                }
+                avrFourStar /= (double)drop_list.four_star_drop.size();
+                for (size_t i = 0; i < drop_list.four_star_drop.size(); i++) {
+                    if (!(drop_list.four_star_drop[i].second > basis_params::limits::fourStarLimit)) {
+                        distFourStar[drop_list.four_star_drop[i].second - 1]++;
+                    }
+                }
+            }
+            std::cout << std::setw(15) << "Average for four star: " << avrFourStar << std::endl;
+        }
 
         if (debug) {
             std::cout << std::endl;
@@ -204,16 +207,19 @@ public:
                 if (i != 0 && i % 5 == 0) std::cout << std::endl;
             }
 
-            std::cout << std::endl;
-            std::cout << std::setw(18) << "Distribution for four star:" << std::endl;
-            std::cout << std::endl;
 
-            for (size_t i = 1; i < distFourStar.size() + 1; i++) {
-                long sum = 0;
-                for (size_t j = 0; j < distFourStar.size(); j++) { sum += distFourStar[j]; }
+            if (!isLite) {
+                std::cout << std::endl;
+                std::cout << std::setw(18) << "Distribution for four star:" << std::endl;
+                std::cout << std::endl;
 
-                std::cout << std::setw(15) << i << ": " << std::setw(8) << distFourStar[i - 1];
-                if (i != 0 && i % 2 == 0) std::cout << std::endl;
+                for (size_t i = 1; i < distFourStar.size() + 1; i++) {
+                    long sum = 0;
+                    for (size_t j = 0; j < distFourStar.size(); j++) { sum += distFourStar[j]; }
+
+                    std::cout << std::setw(15) << i << ": " << std::setw(8) << distFourStar[i - 1];
+                    if (i != 0 && i % 2 == 0) std::cout << std::endl;
+                }
             }
         }
 
@@ -247,7 +253,7 @@ private:
         else { return basis_params::probability::baseFourStarChance; }
     }
 public:
-    void singleWish(bool debug = false) {
+    void singleWish(bool debug = false, bool isLite = false) {
 
         counter.totalPullCounter++;
         counter.countForFiveStar++;
@@ -283,7 +289,7 @@ public:
             }
 
         }
-        else if (chance < rateForFourStar(counter.countForFourStar)) {
+        else if (chance < rateForFourStar(counter.countForFourStar) && !isLite) {
             // Character or Item
             if (charDist(gen) < basis_params::probability::baseEqualChance) {
                 std::uniform_int_distribution<size_t> dis(0, four_star_character.size() - 1);
@@ -309,14 +315,16 @@ public:
             counter.countForFourStar = 0;
         }
         else {
-            if (!debug) { std::cout << "\033[36m" << three_star_item[0] << "\033[0m"; }
-            counter.currency_2 += basis_params::currency::starDustValue;
+            if (!debug) {
+                std::cout << "\033[36m" << three_star_item[0] << "\033[0m";
+                counter.currency_2 += basis_params::currency::starDustValue;
+            }
         }
     }
 
-    void multiWish(long n, bool debug = false) {
+    void multiWish(long n, bool debug = false, bool isLite = false) {
         for (long i = 0; i < n; i++) {
-            singleWish(debug);
+            singleWish(debug, isLite);
             if (!debug) { std::cout << std::endl; }
         }
     }
@@ -352,7 +360,7 @@ private:
 
 public:
 
-    void singleWish(bool debug = false) {
+    void singleWish(bool debug = false, bool isLite = false) {
 
         counter.totalPullCounter++;
         counter.countForFiveStar++;
@@ -392,7 +400,7 @@ public:
             }
 
         }
-        else if (chance < rateForFourStar(counter.countForFourStar)) {
+        else if (chance < rateForFourStar(counter.countForFourStar) && !isLite) {
             if (charDist(gen) < basis_params::probability::baseEqualChance || gotDefaultFourStar) {
                 std::uniform_int_distribution<size_t> dis(0, eventFourStar.size() - 1);
                 std::string drop = eventFourStar[dis(gen)];
@@ -434,14 +442,16 @@ public:
             counter.countForFourStar = 0;
         }
         else {
-            if (!debug) { std::cout << "\033[36m" << three_star_item[0] << "\033[0m"; }
-            counter.currency_2 += basis_params::currency::starDustValue;
+            if (!debug) {
+                std::cout << "\033[36m" << three_star_item[0] << "\033[0m";
+                counter.currency_2 += basis_params::currency::starDustValue;
+            }
         }
     }
 
-    void multiWish(long n, bool debug = false) {
+    void multiWish(long n, bool debug = false, bool isLite = false) {
         for (long i = 0; i < n; i++) {
-            singleWish(debug);
+            singleWish(debug, isLite);
             if (!debug) { std::cout << std::endl; }
         }
     }
@@ -459,17 +469,29 @@ private:
 
     bool isDefault;
 
-    void distTest() {
+    void distTest(bool isLite = false) {
         long n;
         std::cout << "> "; std::cin >> n;
 
         if (isDefault) {
-            object_1.multiWish(n, true);
-            object_1.getStatistic(true);
+            if (isLite) {
+                object_1.multiWish(n, true, true);
+                object_1.getStatistic(true, true);
+            }
+            else {
+                object_1.multiWish(n, true);
+                object_1.getStatistic(true);
+            }
         }
         else {
-            object_2.multiWish(n, true);
-            object_2.getStatistic(true);
+            if (isLite) {
+                object_2.multiWish(n, true, true);
+                object_2.getStatistic(true, true);
+            }
+            else {
+                object_2.multiWish(n, true);
+                object_2.getStatistic(true);
+            }
         }
     }
 public:
@@ -484,6 +506,7 @@ public:
 
             if (command == "exit") { break; }
             else if (command == "mw") { distTest(); }
+            else if (command == "mwl") { distTest(true); }
             else { std::cout << "command not found\n" << std::endl; }
         }
         command.clear();
@@ -613,7 +636,6 @@ int start_DefaultBanner() {
                 // debug
             case('0'):
                 int doubleCheck = _getch();
-
                 if (doubleCheck == '0') {
                     std::cout << "// debug //" << std::endl;
                     std::cout << std::endl;
