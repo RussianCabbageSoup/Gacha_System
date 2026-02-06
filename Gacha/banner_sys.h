@@ -222,7 +222,7 @@ public:
             if (charDist(gen) < basis_params::probability::baseEqualChance) {
                 std::uniform_int_distribution<size_t> dis(0, five_star_character.size() - 1);
                 std::string drop = five_star_character[dis(gen)];
-                if (!debug) { std::cout << "5-STAR " << drop; }
+                if (!debug) { std::cout << "\033[33m5-STAR " << drop << "\033[0m"; }
 
                 if (!debug) {
                     if (checkDuplicate(drop)) counter.currency_1 += basis_params::currency::limitBlessForFiveStar;
@@ -237,7 +237,7 @@ public:
             else {
                 std::uniform_int_distribution<size_t> dis(0, five_star_item.size() - 1);
                 std::string drop = five_star_item[dis(gen)];
-                if (!debug) { std::cout << "5-STAR " << drop; }
+                if (!debug) { std::cout << "\033[33m5-STAR " << drop << "\033[0m"; }
 
                 counter.currency_1 += basis_params::currency::baseBlessForFiveStar;
                 drop_list.five_star_drop.push_back({ drop, counter.rate });
@@ -252,7 +252,7 @@ public:
             if (charDist(gen) < basis_params::probability::baseEqualChance) {
                 std::uniform_int_distribution<size_t> dis(0, four_star_character.size() - 1);
                 std::string drop = four_star_character[dis(gen)];
-                if (!debug) { std::cout << "4-Star " << drop; }
+                if (!debug) { std::cout << "\033[35m4-Star " << drop << "\033[0m"; }
 
                 if (!debug) {
                     if (checkDuplicate(drop)) counter.currency_1 += basis_params::currency::limitBlessForFourStar;
@@ -262,7 +262,7 @@ public:
             else {
                 std::uniform_int_distribution<size_t> dis(0, four_star_item.size() - 1);
                 std::string drop = four_star_item[dis(gen)];
-                if (!debug) { std::cout << "4-Star " << drop; }
+                if (!debug) { std::cout << "\033[35m4-Star " << drop << "\033[0m"; }
 
                 counter.currency_1 += basis_params::currency::baseBlessForFourStar;
                 drop_list.inventory.push_back(drop);
@@ -271,7 +271,7 @@ public:
             counter.countForFourStar = 0;
         }
         else {
-            if (!debug) { std::cout << three_star_item[0]; }
+            if (!debug) { std::cout << "\033[34m" << three_star_item[0] << "\033[0m"; }
             counter.currency_2 += basis_params::currency::starDustValue;
         }
     }
@@ -326,7 +326,7 @@ public:
         if (chance < rateForFiveStar(counter.countForFiveStar)) {
             if (charDist(gen) < basis_params::probability::baseEventCharChance || gotDefaultFiveStar) {
 
-                if (!debug) { std::cout << "5-STAR " << eventFiveStar; }
+                if (!debug) { std::cout << "\033[33m5-STAR " << eventFiveStar << "\033[0m"; }
 
                 if (!debug) {
                     if (checkDuplicate(eventFiveStar)) counter.currency_1 += basis_params::currency::limitBlessForFiveStar;
@@ -342,7 +342,7 @@ public:
             else {
                 std::uniform_int_distribution<size_t> dis(0, five_star_character.size() - 1);
                 std::string drop = five_star_character[dis(gen)];
-                if (!debug) { std::cout << "5-STAR " << drop; }
+                if (!debug) { std::cout << "\033[33m5-STAR " << drop << "\033[0m"; }
 
                 if (!debug) {
                     if (checkDuplicate(drop)) counter.currency_1 += basis_params::currency::limitBlessForFiveStar;
@@ -362,7 +362,7 @@ public:
                 std::uniform_int_distribution<size_t> dis(0, eventFourStar.size() - 1);
                 std::string drop = eventFourStar[dis(gen)];
 
-                if (!debug) { std::cout << "4-Star " << drop; }
+                if (!debug) { std::cout << "\033[35m4-Star " << drop << "\033[0m"; }
 
                 if (!debug) {
                     if (checkDuplicate(drop)) counter.currency_1 += basis_params::currency::limitBlessForFourStar;
@@ -375,7 +375,7 @@ public:
                 if (charDist(gen) < basis_params::probability::baseEqualChance) {
                     std::uniform_int_distribution<size_t> dis(0, four_star_character.size() - 1);
                     std::string drop = four_star_character[dis(gen)];
-                    if (!debug) { std::cout << "4-Star " << drop; }
+                    if (!debug) { std::cout << "\033[35m4-Star " << drop << "\033[0m"; }
 
                     if (!debug) {
                         if (checkDuplicate(drop)) counter.currency_1 += basis_params::currency::limitBlessForFourStar;
@@ -385,7 +385,7 @@ public:
                 else {
                     std::uniform_int_distribution<size_t> dis(0, four_star_item.size() - 1);
                     std::string drop = four_star_item[dis(gen)];
-                    if (!debug) { std::cout << "4-Star " << drop; }
+                    if (!debug) { std::cout << "\033[35m4-Star " << drop << "\033[0m"; }
 
                     counter.currency_1 += basis_params::currency::baseBlessForFourStar;
                     drop_list.inventory.push_back(drop);
@@ -396,7 +396,7 @@ public:
             counter.countForFourStar = 0;
         }
         else {
-            if (!debug) { std::cout << three_star_item[0]; }
+            if (!debug) { std::cout << "\033[34m" << three_star_item[0] << "\033[0m"; }
             counter.currency_2 += basis_params::currency::starDustValue;
         }
     }
